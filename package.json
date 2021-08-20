@@ -1,0 +1,21 @@
+{
+  "name": "ammojs-test",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "@enable3d/ammo-physics": "^0.23.0",
+    "@react-three/drei": "^7.3.1",
+    "@react-three/fiber": "^7.0.6",
+    "@types/three": "^0.131.0",
+    "next": "^11.0.1",
+    "next-transpile-modules": "^8.0.0",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "three": "^0.131.2",
+    "typescript": "^4.3.5"
+  },
+  "devDependencies": {
+    "@types/react": "^17.0.15"
+  }
+}
