@@ -1,5 +1,12 @@
 import { ExtendedMesh, ExtendedObject3D } from "@enable3d/ammo-physics";
-import { Box, OrbitControls, Plane, Sphere, useGLTF } from "@react-three/drei";
+import {
+  Box,
+  OrbitControls,
+  Plane,
+  Sphere,
+  useAnimations,
+  useGLTF,
+} from "@react-three/drei";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import {
   KeyboardEventHandler,
@@ -10,7 +17,16 @@ import {
   useRef,
   useState,
 } from "react";
-import { DirectionalLight, Group, Mesh, MeshStandardMaterial } from "three";
+import {
+  AnimationAction,
+  AnimationClip,
+  AnimationMixer,
+  DirectionalLight,
+  Group,
+  Mesh,
+  MeshBasicMaterial,
+  MeshStandardMaterial,
+} from "three";
 import {
   CollisionFlag,
   Enable3DExtendedObject,
@@ -19,6 +35,28 @@ import {
   useHinge,
   useRigidBody,
 } from "../hooks/use-ammo";
+
+const Aubergine = memo((obj) => {
+  const glb = useGLTF("/assets/3d/aubergine.glb");
+  const aub = glb.scene.clone(true).children[0];
+
+  const ref = useRigidBody({
+    shape: "hull",
+  });
+
+  useEffect(() => {
+    aub.castShadow = true;
+  }, [aub]);
+
+  return (
+    <primitive
+      object={aub}
+      scale={[0.4, 0.4, 0.4]}
+      position={[obj.x, obj.y, obj.z]}
+      ref={ref}
+    />
+  );
+});
 
 const Physbox = () => {
   const box = useRigidBody<Mesh>({
@@ -58,9 +96,13 @@ const Balls = () => {
         color: "#" + Math.round(Math.random() * 0xffffff).toString(16),
       };
 
+      const max = 300;
+
       setBalls((old) => {
+        if (old.length > max - 1) return old;
         let newballs = [...old, ball];
-        if (newballs.length > 400) newballs.shift();
+
+        if (newballs.length > max) newballs.shift();
         return newballs;
       });
     }, 50);
@@ -73,12 +115,13 @@ const Balls = () => {
   return (
     <>
       {balls.map((ball) => (
-        <MemoBall
-          key={ball.rand}
-          rand={ball.rand}
-          color={ball.color}
-          position={[ball.x, ball.y, ball.z]}
-        />
+        // <MemoBall
+        //   key={ball.rand}
+        //   rand={ball.rand}
+        //   color={ball.color}
+        //   position={[ball.x, ball.y, ball.z]}
+        // />
+        <Aubergine key={ball.rand} {...ball} />
       ))}
     </>
   );
@@ -145,20 +188,32 @@ const Hinge = () => {
 };
 
 const usePlayerControls = (
-  ref: MutableRefObject<Enable3DExtendedObject<Mesh>>
+  ref: MutableRefObject<Enable3DExtendedObject<Mesh>>,
+  actions: Record<string, AnimationAction>
 ) => {
   const keysDown = useRef({});
+  const inAir = useRef();
+  const state = useRef({
+    walking: false,
+  });
 
   useEffect(() => {
     const handleKeyDown: KeyboardEventHandler<HTMLDivElement> = (e) => {
-      keysDown.current[e.key] = true;
+      keysDown.current[e.code] = true;
     };
     const handleKeyUp: KeyboardEventHandler<HTMLDivElement> = (e) => {
-      keysDown.current[e.key] = false;
+      keysDown.current[e.code] = false;
     };
 
     window.addEventListener("keydown", handleKeyDown);
     window.addEventListener("keyup", handleKeyUp);
+
+    console.log(actions);
+    actions.Walk.play();
+    actions.Reset.play();
+
+    actions.Reset.setEffectiveWeight(1);
+    actions.Walk.setEffectiveWeight(0);
 
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
@@ -179,7 +234,30 @@ const usePlayerControls = (
         z = Math.cos(theta) * speed;
 
       ref.current.body.setVelocity(x, y, z);
+
+      if (!state.current.walking) {
+        state.current.walking = true;
+        // actions.Walk.play();
+        actions.Reset.fadeOut(0.2);
+        actions.Walk.reset()
+          .setEffectiveTimeScale(1)
+          .setEffectiveWeight(1)
+          .fadeIn(0.2)
+          .play();
+        console.log("play walk");
+      }
+      // actions.Walk.crossFadeFrom(actions.Reset, 0.1, false);
+      // actions?.Walk.setEffectiveWeight(1);
+    } else {
+      if (state.current.walking) {
+        state.current.walking = false;
+        console.log("stop walk");
+        actions.Walk.fadeOut(0.2);
+        actions.Reset.reset().fadeIn(0.2);
+      }
+      // actions.Walk.crossFadeTo(actions.Reset, 0.1, false);
     }
+
     if (keysDown.current.ArrowLeft) {
       ref.current.body.setAngularVelocityY(5);
     } else if (keysDown.current.ArrowRight) {
@@ -187,10 +265,18 @@ const usePlayerControls = (
     } else {
       ref.current.body.setAngularVelocityY(0);
     }
+
+    if (keysDown.current.Space && !inAir.current) {
+      ref.current.body.applyForceY(10);
+      inAir.current = true;
+    }
   });
 };
 
 const Player = () => {
+  const gltf = useGLTF("/assets/3d/stickman3.glb");
+  const { actions } = useAnimations(gltf.animations, gltf.scene);
+
   const ref = useRigidBody<Enable3DExtendedObject<Mesh>>();
 
   const light = useRef<DirectionalLight>();
@@ -198,6 +284,7 @@ const Player = () => {
   const { camera, scene } = useThree();
 
   const { loading } = useAmmo();
+
   useFrame(() => {
     if (light.current) {
       light.current.position.copy(camera.position);
@@ -222,6 +309,10 @@ const Player = () => {
   useEffect(() => {
     // ref.current.body.setFriction(2);
     ref.current.body.setAngularFactor(0, 0, 0);
+    gltf.scene.position.y = -0.5;
+    gltf.scene.traverse((m) => {
+      m.castShadow = true;
+    });
   }, []);
 
   useFrame(() => {
@@ -231,18 +322,20 @@ const Player = () => {
     camera.lookAt(ref.current.position);
   });
 
-  usePlayerControls(ref);
+  usePlayerControls(ref, actions);
 
   return (
     <>
-      <Box ref={ref} scale={[1, 3, 1]} castShadow>
-        <meshStandardMaterial color="blue" />
+      <Box ref={ref} castShadow>
+        <meshBasicMaterial visible={false} />
+
+        <primitive object={gltf.scene} />
       </Box>
       <directionalLight
         ref={light}
         castShadow
-        shadow-mapSize-width={1024}
-        shadow-mapSize-height={1024}
+        shadow-mapSize-width={2048}
+        shadow-mapSize-height={2048}
       />
     </>
   );
@@ -255,8 +348,8 @@ const Dunes = () => {
     shape: "concave",
   });
 
-  const ground = gltf.scene.getObjectByName("ground");
-  const spawn1 = gltf.scene.getObjectByName("spawn_1");
+  const ground = gltf.scene.getObjectByName("ground").clone(true);
+  const spawn1 = gltf.scene.getObjectByName("spawn_2").clone(true);
 
   ground.receiveShadow = true;
   // ground.castShadow = true;
@@ -292,7 +385,7 @@ const Scene = () => {
   ) : (
     <>
       <ambientLight intensity={0.5} />
-      <Groupie />
+      {/* <Groupie /> */}
       <Dunes />
       <Player />
     </>
