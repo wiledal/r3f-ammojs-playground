@@ -14,6 +14,7 @@ import {
   MutableRefObject,
   Suspense,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -38,7 +39,7 @@ import {
 
 const Aubergine = memo((obj) => {
   const glb = useGLTF("/assets/3d/aubergine.glb");
-  const aub = glb.scene.clone(true).children[0];
+  const aub = useMemo(() => glb.scene.clone(true).children[0], [glb]);
 
   const ref = useRigidBody({
     shape: "hull",
@@ -191,13 +192,22 @@ const usePlayerControls = (
   ref: MutableRefObject<Enable3DExtendedObject<Mesh>>,
   actions: Record<string, AnimationAction>
 ) => {
+  const { physics } = useAmmo();
   const keysDown = useRef({});
-  const inAir = useRef();
+
   const state = useRef({
     walking: false,
+    inAir: false,
+    wantsToJump: false,
   });
 
+  const ray = useMemo(() => {
+    return physics.add.raycaster();
+  }, []);
+
   useEffect(() => {
+    const { body } = ref.current;
+
     const handleKeyDown: KeyboardEventHandler<HTMLDivElement> = (e) => {
       keysDown.current[e.code] = true;
     };
@@ -205,10 +215,11 @@ const usePlayerControls = (
       keysDown.current[e.code] = false;
     };
 
+    body.setFriction(2);
+
     window.addEventListener("keydown", handleKeyDown);
     window.addEventListener("keyup", handleKeyUp);
 
-    console.log(actions);
     actions.Walk.play();
     actions.Reset.play();
 
@@ -222,7 +233,24 @@ const usePlayerControls = (
   }, []);
 
   useFrame(() => {
-    if (keysDown.current.ArrowUp) {
+    const { body } = ref.current;
+    const cState = state.current;
+    let canJump = false;
+
+    if (ray) {
+      ray.setRayFromWorld(body.position.x, body.position.y, body.position.z);
+      ray.setRayToWorld(
+        body.position.x,
+        body.position.y - 1.5,
+        body.position.z
+      );
+      ray.rayTest();
+      const hit = ray.hasHit();
+
+      cState.inAir = !hit;
+    }
+
+    if (keysDown.current.ArrowUp && !cState.inAir) {
       const speed = 5;
       const rotation = ref.current.getWorldDirection(
         ref.current.rotation.toVector3()
@@ -235,8 +263,8 @@ const usePlayerControls = (
 
       ref.current.body.setVelocity(x, y, z);
 
-      if (!state.current.walking) {
-        state.current.walking = true;
+      if (!cState.walking) {
+        cState.walking = true;
         // actions.Walk.play();
         actions.Reset.fadeOut(0.2);
         actions.Walk.reset()
@@ -244,18 +272,13 @@ const usePlayerControls = (
           .setEffectiveWeight(1)
           .fadeIn(0.2)
           .play();
-        console.log("play walk");
       }
-      // actions.Walk.crossFadeFrom(actions.Reset, 0.1, false);
-      // actions?.Walk.setEffectiveWeight(1);
     } else {
-      if (state.current.walking) {
-        state.current.walking = false;
-        console.log("stop walk");
+      if (cState.walking) {
+        cState.walking = false;
         actions.Walk.fadeOut(0.2);
         actions.Reset.reset().fadeIn(0.2);
       }
-      // actions.Walk.crossFadeTo(actions.Reset, 0.1, false);
     }
 
     if (keysDown.current.ArrowLeft) {
@@ -266,9 +289,15 @@ const usePlayerControls = (
       ref.current.body.setAngularVelocityY(0);
     }
 
-    if (keysDown.current.Space && !inAir.current) {
-      ref.current.body.applyForceY(10);
-      inAir.current = true;
+    if (keysDown.current.Space && !cState.inAir) {
+      cState.wantsToJump = true;
+    }
+
+    if (cState.wantsToJump) {
+      // ref.current.body.applyForceY(10);
+      console.log("jomp");
+      body.setVelocityY(5);
+      cState.wantsToJump = false;
     }
   });
 };
@@ -289,7 +318,7 @@ const Player = () => {
     if (light.current) {
       light.current.position.copy(camera.position);
       light.current.position.x += 40;
-      light.current.position.y += 40;
+      light.current.position.y += 80;
       light.current.position.z += 40;
       light.current.target.position.copy(camera.position);
     }
@@ -298,7 +327,7 @@ const Player = () => {
   useEffect(() => {
     if (!loading) {
       scene.add(light.current.target);
-      let shadowSize = 30;
+      let shadowSize = 10;
       light.current.shadow.camera.left = -shadowSize;
       light.current.shadow.camera.right = shadowSize;
       light.current.shadow.camera.top = -shadowSize;
@@ -309,7 +338,7 @@ const Player = () => {
   useEffect(() => {
     // ref.current.body.setFriction(2);
     ref.current.body.setAngularFactor(0, 0, 0);
-    gltf.scene.position.y = -0.5;
+    gltf.scene.position.y = -0.8;
     gltf.scene.traverse((m) => {
       m.castShadow = true;
     });
@@ -317,8 +346,8 @@ const Player = () => {
 
   useFrame(() => {
     camera.position.copy(ref.current.position);
-    camera.position.z -= 5;
-    camera.position.y += 5;
+    camera.position.z -= 3;
+    camera.position.y += 3;
     camera.lookAt(ref.current.position);
   });
 
@@ -326,10 +355,10 @@ const Player = () => {
 
   return (
     <>
-      <Box ref={ref} castShadow>
+      <Box ref={ref} castShadow args={[1, 1.8, 1]}>
         <meshBasicMaterial visible={false} />
 
-        <primitive object={gltf.scene} />
+        <primitive object={gltf.scene} scale={[0.5, 0.5, 0.5]} />
       </Box>
       <directionalLight
         ref={light}
@@ -348,18 +377,21 @@ const Dunes = () => {
     shape: "concave",
   });
 
-  const ground = gltf.scene.getObjectByName("ground").clone(true);
-  const spawn1 = gltf.scene.getObjectByName("spawn_2").clone(true);
+  const ground = useMemo(
+    () => gltf.scene.getObjectByName("ground").clone(true),
+    [gltf]
+  );
+  const spawn1 = useMemo(
+    () => gltf.scene.getObjectByName("spawn_2").clone(true),
+    [gltf]
+  );
 
   ground.receiveShadow = true;
-  // ground.castShadow = true;
 
   return (
     <>
       <primitive ref={ref} object={ground} />
-      <primitive object={spawn1}>
-        <Balls />
-      </primitive>
+      <primitive object={spawn1}>{/* <Balls /> */}</primitive>
     </>
   );
 };
