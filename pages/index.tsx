@@ -1,6 +1,7 @@
 import { ExtendedMesh, ExtendedObject3D } from "@enable3d/ammo-physics";
 import {
   Box,
+  Cylinder,
   OrbitControls,
   Plane,
   Sphere,
@@ -238,10 +239,14 @@ const usePlayerControls = (
     let canJump = false;
 
     if (ray) {
-      ray.setRayFromWorld(body.position.x, body.position.y, body.position.z);
+      ray.setRayFromWorld(
+        body.position.x,
+        body.position.y - 0.9,
+        body.position.z
+      );
       ray.setRayToWorld(
         body.position.x,
-        body.position.y - 1.5,
+        body.position.y - 1.1,
         body.position.z
       );
       ray.rayTest();
@@ -338,7 +343,7 @@ const Player = () => {
   useEffect(() => {
     // ref.current.body.setFriction(2);
     ref.current.body.setAngularFactor(0, 0, 0);
-    gltf.scene.position.y = -0.8;
+    gltf.scene.position.y = -0.9;
     gltf.scene.traverse((m) => {
       m.castShadow = true;
     });
@@ -355,11 +360,15 @@ const Player = () => {
 
   return (
     <>
-      <Box ref={ref} castShadow args={[1, 1.8, 1]}>
-        <meshBasicMaterial visible={false} />
+      <group>
+        <group ref={ref}>
+          <Sphere args={[0.4]} position={[0, 0.5, 0]} visible={false} />
+          <Cylinder args={[0.4, 0.5, 1]} visible={false} />
+          <Sphere args={[0.4]} position={[0, -0.5, 0]} visible={false} />
 
-        <primitive object={gltf.scene} scale={[0.5, 0.5, 0.5]} />
-      </Box>
+          <primitive object={gltf.scene} scale={[0.5, 0.5, 0.5]} />
+        </group>
+      </group>
       <directionalLight
         ref={light}
         castShadow

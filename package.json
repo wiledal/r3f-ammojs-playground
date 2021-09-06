@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
+  "scripts": {
+    "dev": "next --port 3004"
+  },
   "dependencies": {
     "@enable3d/ammo-physics": "^0.23.0",
     "@react-three/drei": "^7.3.1",

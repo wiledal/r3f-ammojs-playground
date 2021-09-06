@@ -58,7 +58,7 @@
 
 "@enable3d/ammo-physics@^0.23.0":
   version "0.23.0"
-  resolved "http://npm.tracklib.com:80/@enable3d%2fammo-physics/-/ammo-physics-0.23.0.tgz#5f4dc56f80bd6074701214d74ede8652780fc2fb"
+  resolved "https://registry.yarnpkg.com/@enable3d/ammo-physics/-/ammo-physics-0.23.0.tgz#5f4dc56f80bd6074701214d74ede8652780fc2fb"
   integrity sha512-ggNvaaHkPJjohQdjdrfzNKh7LjFOwrVGE3jMx4wFvoFoJcxfetW25VBYO4cUL/sY/luCVSkn2DEsYVxEAxLIrA==
   dependencies:
     "@enable3d/common" "^0.23.0"

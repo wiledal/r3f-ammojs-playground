@@ -24,12 +24,12 @@ interface IAmmoContext {
 
 export const AmmoContext = createContext<IAmmoContext>(null);
 
-export const CollisionFlag = {
-  DYNAMIC: 0,
-  STATIC: 1,
-  KINETIC: 2,
-  GHOST: 3,
-};
+export enum CollisionFlag {
+  DYNAMIC = 0,
+  STATIC = 1,
+  KINETIC = 2,
+  GHOST = 3,
+}
 
 export const useAmmo = () => {
   return useContext<IAmmoContext>(AmmoContext);

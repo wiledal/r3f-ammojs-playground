@@ -1,5 +1,5 @@
 Arguments: 
-  /usr/local/bin/node /usr/local/bin/yarn add @enable3d/ammo-physics
+  /usr/local/bin/node /usr/local/bin/yarn add @enable3d/physics
 
 PATH: 
   /usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Library/Apple/usr/bin
@@ -14,12 +14,17 @@ Platform:
   darwin x64
 
 Trace: 
-  SyntaxError: /Users/hugo/repos/ammojs-test/package.json: Unexpected token } in JSON at position 312
-      at JSON.parse (<anonymous>)
-      at /usr/local/lib/node_modules/yarn/lib/cli.js:1625:59
-      at Generator.next (<anonymous>)
-      at step (/usr/local/lib/node_modules/yarn/lib/cli.js:310:30)
-      at /usr/local/lib/node_modules/yarn/lib/cli.js:321:13
+  Error: https://registry.npmjs.org/@enable3d%2fphysics: Not found
+      at Request.params.callback [as _callback] (/usr/local/lib/node_modules/yarn/lib/cli.js:66988:18)
+      at Request.self.callback (/usr/local/lib/node_modules/yarn/lib/cli.js:140662:22)
+      at Request.emit (events.js:375:28)
+      at Request.<anonymous> (/usr/local/lib/node_modules/yarn/lib/cli.js:141634:10)
+      at Request.emit (events.js:375:28)
+      at IncomingMessage.<anonymous> (/usr/local/lib/node_modules/yarn/lib/cli.js:141556:12)
+      at Object.onceWrapper (events.js:481:28)
+      at IncomingMessage.emit (events.js:387:35)
+      at endReadableNT (internal/streams/readable.js:1317:12)
+      at processTicksAndRejections (internal/process/task_queues.js:82:21)
 
 npm manifest: 
   {
@@ -27,14 +32,20 @@ npm manifest:
     "version": "1.0.0",
     "main": "index.js",
     "license": "MIT",
+    "scripts": {
+      "dev": "next --port 3004"
+    },
     "dependencies": {
+      "@enable3d/ammo-physics": "^0.23.0",
       "@react-three/drei": "^7.3.1",
       "@react-three/fiber": "^7.0.6",
+      "@types/three": "^0.131.0",
       "next": "^11.0.1",
+      "next-transpile-modules": "^8.0.0",
       "react": "^17.0.2",
       "react-dom": "^17.0.2",
       "three": "^0.131.2",
-      "typescript": "^4.3.5",
+      "typescript": "^4.3.5"
     },
     "devDependencies": {
       "@types/react": "^17.0.15"
@@ -102,6 +113,28 @@ Lockfile:
     version "9.0.2"
     resolved "http://npm.tracklib.com:80/@chevrotain%2futils/-/utils-9.0.2.tgz#6f28fd41d2168c21e441e1a4ad6a0097e4d351f5"
     integrity sha512-iTju1VpbGruWagXS/XswuqeimOCRNeDvrXLlWHYsHp1qTU8sJfAfLiX5vs7DNxB1px6N8VWVI0SD8vMUksNBYw==
+  
+  "@enable3d/ammo-physics@^0.23.0":
+    version "0.23.0"
+    resolved "http://npm.tracklib.com:80/@enable3d%2fammo-physics/-/ammo-physics-0.23.0.tgz#5f4dc56f80bd6074701214d74ede8652780fc2fb"
+    integrity sha512-ggNvaaHkPJjohQdjdrfzNKh7LjFOwrVGE3jMx4wFvoFoJcxfetW25VBYO4cUL/sY/luCVSkn2DEsYVxEAxLIrA==
+    dependencies:
+      "@enable3d/common" "^0.23.0"
+      "@enable3d/three-wrapper" "^0.23.0"
+      "@yandeu/events" "0.0.5"
+  
+  "@enable3d/common@^0.23.0":
+    version "0.23.0"
+    resolved "http://npm.tracklib.com:80/@enable3d%2fcommon/-/common-0.23.0.tgz#1658b3e74df97092d09c01906cdc39bf37fa0603"
+    integrity sha512-yzttzi2shZ/QuI5q/LerBXerKKZqy/YJW/W08uYvgwP19odWOKnsok8rLBzjWbgBV3Icr1Q9SV1jWis9GPxeww==
+    dependencies:
+      "@enable3d/three-wrapper" "^0.23.0"
+      "@yandeu/events" "0.0.5"
+  
+  "@enable3d/three-wrapper@^0.23.0":
+    version "0.23.0"
+    resolved "http://npm.tracklib.com:80/@enable3d%2fthree-wrapper/-/three-wrapper-0.23.0.tgz#a5c2c2e8832974c3bca970218005314e91a8956e"
+    integrity sha512-weUWeSisMwRlrbmbf1TKvce3xL7wkisx83tXlLXYSUwrUrHr7NzJ3gmWACjKtCkwsP5SQ952VdPR2eJlYxTHBA==
   
   "@hapi/accept@5.0.2":
     version "5.0.2"
@@ -215,6 +248,11 @@ Lockfile:
     resolved "http://npm.tracklib.com:80/@types%2fscheduler/-/scheduler-0.16.2.tgz#1a62f89525723dde24ba1b01b092bf5df8ad4d39"
     integrity sha512-hppQEBDmlwhFAXKJX2KnWLYu5yMfi91yazPb2l+lbJiwW+wdo1gNeRA+3RgNSO39WYX2euey41KEwnqesU2Jew==
   
+  "@types/three@^0.131.0":
+    version "0.131.0"
+    resolved "https://registry.yarnpkg.com/@types/three/-/three-0.131.0.tgz#98f59887b05f71e665cf2fbdf04e0e4ceb9f89b6"
+    integrity sha512-4VCtsDi6mIId96GcGKG91e2Y6VwU2T0u/YB7vCFJh1kXik93arxn7l9tVZHo1LXOtgCJJDdC+e1fwf2Vu/4ySw==
+  
   "@webgpu/glslang@^0.0.15":
     version "0.0.15"
     resolved "http://npm.tracklib.com:80/@webgpu%2fglslang/-/glslang-0.0.15.tgz#f5ccaf6015241e6175f4b90906b053f88483d1f2"
@@ -225,14 +263,10 @@ Lockfile:
     resolved "http://npm.tracklib.com:80/@webxr-input-profiles%2fmotion-controllers/-/motion-controllers-1.0.0.tgz#0a84533288af39d85bfe1987721035925d69be47"
     integrity sha512-Ppxde+G1/QZbU8ShCQg+eq5VtlcL/FPkerF1dkDOLlIml0LJD1tFqnCZYR0SrHzYleIQ2siRnOx7xbFLaCpExQ==
   
-  ammo-debug-drawer@^1.0.1:
-    version "1.0.1"
-    resolved "http://npm.tracklib.com:80/ammo-debug-drawer/-/ammo-debug-drawer-1.0.1.tgz#c1d84d0342905cf7c08301e6551892a23c13955d"
-    integrity sha512-oPvQh5CQKgFQpIuBMMKxT019aYoONOEnBLn91dAg3CrMWdSP/Om8rLWRX0VkAk45SEK/B0ybXB7nsjXsz8QEBw==
-  
-  ammo.js@kripken/ammo.js:
-    version "0.0.2"
-    resolved "https://codeload.github.com/kripken/ammo.js/tar.gz/c40aee525f2e3d4d2917938bf4e0b21d27f40d3c"
+  "@yandeu/events@0.0.5":
+    version "0.0.5"
+    resolved "http://npm.tracklib.com:80/@yandeu%2fevents/-/events-0.0.5.tgz#f8fb41cf4222186eca6a0a5d36f5393805484f19"
+    integrity sha512-TUkghSGu0ThcEyAP50WHU/vdQkpt9EZyotjZzG8KirR+VI5o7Rp5wabcGru62JNy+awMR8Voy+kFzhNkC/1E6A==
   
   anser@1.4.9:
     version "1.4.9"
@@ -750,6 +784,14 @@ Lockfile:
     dependencies:
       iconv-lite "^0.6.2"
   
+  enhanced-resolve@^5.7.0:
+    version "5.8.2"
+    resolved "http://npm.tracklib.com:80/enhanced-resolve/-/enhanced-resolve-5.8.2.tgz#15ddc779345cbb73e97c611cd00c01c1e7bf4d8b"
+    integrity sha512-F27oB3WuHDzvR2DOGNTaYy0D5o0cnrv8TeI482VM4kYgQd/FT9lUQwuNsJ0oOHtBUq7eiW5ytqzp7nBFknL+GA==
+    dependencies:
+      graceful-fs "^4.2.4"
+      tapable "^2.2.0"
+  
   es-abstract@^1.18.0-next.1, es-abstract@^1.18.0-next.2:
     version "1.18.5"
     resolved "http://npm.tracklib.com:80/es-abstract/-/es-abstract-1.18.5.tgz#9b10de7d4c206a3581fd5b2124233e04db49ae19"
@@ -902,7 +944,7 @@ Lockfile:
     resolved "http://npm.tracklib.com:80/glsl-noise/-/glsl-noise-0.0.0.tgz#367745f3a33382c0eeec4cb54b7e99cfc1d7670b"
     integrity sha1-NndF86MzgsDu7Ey1S36Zz8HXZws=
   
-  graceful-fs@^4.1.2:
+  graceful-fs@^4.1.2, graceful-fs@^4.2.4:
     version "4.2.6"
     resolved "http://npm.tracklib.com:80/graceful-fs/-/graceful-fs-4.2.6.tgz#ff040b2b0853b23c3d31027523706f1885d76bee"
     integrity sha512-nTnJ528pbqxYanhpDYsi4Rd8MAeaBA67+RZ10CM1m3bTAVFEDcd5AuA4a6W5YkGZ1iNXHzZz8T6TBKLeBuNriQ==
@@ -1277,6 +1319,14 @@ Lockfile:
     integrity sha512-6iM8R99ze45ivyH8vybJ7X0yekIcPf5GgLV5K0ENCbmRcaRIDoj37BC8iLEmaaBfqqb8enuZ5p0uhY+lVAbAcA==
     dependencies:
       querystring "^0.2.0"
+  
+  next-transpile-modules@^8.0.0:
+    version "8.0.0"
+    resolved "http://npm.tracklib.com:80/next-transpile-modules/-/next-transpile-modules-8.0.0.tgz#56375cdc25ae5d23a834195f277fc2737b26cb97"
+    integrity sha512-Q2f2yB0zMJ8KJbIYAeZoIxG6cSfVk813zr6B5HzsLMBVcJ3FaF8lKr7WG66n0KlHCwjLSmf/6EkgI6QQVWHrDw==
+    dependencies:
+      enhanced-resolve "^5.7.0"
+      escalade "^3.1.1"
   
   next@^11.0.1:
     version "11.0.1"
@@ -1975,9 +2025,10 @@ Lockfile:
     dependencies:
       has-flag "^4.0.0"
   
-  three-ammo@notrabs/three-ammo#eab584a0fd62fe29d5b047844154c67a2b80101c:
-    version "1.1.7"
-    resolved "https://codeload.github.com/notrabs/three-ammo/tar.gz/eab584a0fd62fe29d5b047844154c67a2b80101c"
+  tapable@^2.2.0:
+    version "2.2.0"
+    resolved "http://npm.tracklib.com:80/tapable/-/tapable-2.2.0.tgz#5c373d281d9c672848213d0e037d1c4165ab426b"
+    integrity sha512-FBk4IesMV1rBxX2tfiK8RAmogtWn53puLOQlvO8XuwlgxcYbP4mVPS9Ph4aeamSyyVjOl24aYWAuc8U5kCVwMw==
   
   three-mesh-bvh@^0.4.1:
     version "0.4.1"
@@ -1999,11 +2050,6 @@ Lockfile:
       opentype.js "^1.3.3"
       potpack "^1.0.1"
       zstddec "^0.0.2"
-  
-  three-to-ammo@^1.0.0:
-    version "1.0.0"
-    resolved "http://npm.tracklib.com:80/three-to-ammo/-/three-to-ammo-1.0.0.tgz#e4f7ca98d1eef29c56f627f6cc3f8ff2887222cb"
-    integrity sha512-JqaKAcC5y+Nz90n0+P4eCu/M2th0B/2whhCi+0yaZh9iv//UF+1IaQuebiN1n24tx3eFpL+LcJIG7H5VIyySJA==
   
   three@^0.131.2:
     version "0.131.2"
@@ -2117,16 +2163,6 @@ Lockfile:
     dependencies:
       punycode "1.3.2"
       querystring "0.2.0"
-  
-  use-ammojs@^0.1.29:
-    version "0.1.29"
-    resolved "http://npm.tracklib.com:80/use-ammojs/-/use-ammojs-0.1.29.tgz#68603a8f104e124deedf0da899a52b7567ec2e0d"
-    integrity sha512-fpcYtDFUpTi5+0py0oCv1JH0L68ghQ5irPSOCHI47vvqSiM2MdAs5uVG6nHjHD6hUVAFVxmzmI7VDTv4nulg1A==
-    dependencies:
-      ammo-debug-drawer "^1.0.1"
-      ammo.js kripken/ammo.js
-      three-ammo notrabs/three-ammo#eab584a0fd62fe29d5b047844154c67a2b80101c
-      three-to-ammo "^1.0.0"
   
   use-asset@^1.0.4:
     version "1.0.4"
